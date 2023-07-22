@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class LobbyManager : MonoBehaviourPunCallbacks
 {
-    private string gameVersion = "Prototype";
+    private string gameVersion = "Version 1.0";
 
     public Text InfoText;
     public Text gameversionText;
@@ -52,7 +52,7 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     public override void OnJoinRandomFailed(short returncode, string message)
     {
         InfoText.text = "룸 매칭 실패 : 새로운 룸 생성...";
-        PhotonNetwork.CreateRoom(null, new RoomOptions { MaxPlayers = 2 });
+        PhotonNetwork.CreateRoom(null, new RoomOptions { MaxPlayers = 5 });
     }
 
     public override void OnJoinedRoom()
@@ -75,9 +75,10 @@ public class LobbyManager : MonoBehaviourPunCallbacks
 
     private void CheckPlayersCount()
     {
-        if (PhotonNetwork.CurrentRoom.PlayerCount >= 3)
+        if (PhotonNetwork.CurrentRoom.PlayerCount >= 5)
         {
-            PhotonNetwork.LoadLevel("Main");
+            PhotonNetwork.LoadLevel("Main2");
+            InfoText.text = "게임 로딩중...";
         }
     }
 
@@ -86,5 +87,6 @@ public class LobbyManager : MonoBehaviourPunCallbacks
         int roomPlayerCount = PhotonNetwork.CurrentRoom.PlayerCount;
         InfoText.text = $"룸 접속 : 룸 접속인원 ({roomPlayerCount})";
     }
+
 }
 

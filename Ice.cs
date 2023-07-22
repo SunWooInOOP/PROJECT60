@@ -51,7 +51,7 @@ public class Ice : MonoBehaviourPun
                 isTry = false;
                 PlayerMovement targetMove = other.GetComponent<PlayerMovement>();
                 photonView.RPC("SpikeParticle", RpcTarget.All);
-                targetMove.photonView.RPC("ChangeSpeed", RpcTarget.All, 1f);
+                targetMove.photonView.RPC("ChangeSpeed", RpcTarget.All, 2f);
                 StartCoroutine(ReturnOriginalSpeed(targetMove, 4f));
             }
         }

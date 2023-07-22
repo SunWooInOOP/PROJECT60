@@ -30,6 +30,7 @@ public class SkillController : MonoBehaviourPun
     public ParticleSystem outInvisibleParticle;
 
     public FireWork fireworkSkill;
+    private float healMount = 1;
 
     private void Awake()
     {
@@ -46,10 +47,23 @@ public class SkillController : MonoBehaviourPun
     {
         if (photonView.IsMine)
         {
+            Debug.Log("스킬버튼 할당");
             for (int i = 0; i < uiManager.skillButtons.Length; i++)
             {
                 int index = i;
                 uiManager.skillButtons[i].onClick.AddListener(() => OnSkillButtonClick(index));
+            }
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (photonView.IsMine)
+        {
+            Debug.Log("스킬버튼 할당 제거");
+            for (int i = 0; i < uiManager.skillButtons.Length; i++)
+            {
+                uiManager.skillButtons[i].onClick.RemoveAllListeners();
             }
         }
     }
@@ -97,7 +111,7 @@ public class SkillController : MonoBehaviourPun
             photonView.RPC("Invisible", RpcTarget.All);
         } else if (index == 2)
         {
-            runnerPlayer.photonView.RPC("RestoreHealth", RpcTarget.All, 1);
+            runnerPlayer.photonView.RPC("RestoreHealth", RpcTarget.MasterClient, healMount);
         }
     }
 

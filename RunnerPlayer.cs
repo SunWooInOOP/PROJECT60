@@ -42,14 +42,30 @@ public class RunnerPlayer : PlayerEntity
         healthImage02.gameObject.SetActive(true);
 
         runnerPlayerMovement.enabled = true;
+        if (photonView.IsMine)
+        {
+            UIManager.instance.UpdateTeamIdText(teamId);
+        }
     }
+
+    [PunRPC]
+    public override void ApplyUpdatedHealth(float updatedHealth, bool isDead)
+    {
+        base.ApplyUpdatedHealth(updatedHealth, isDead);
+        Debug.Log("업데이트 하위");
+        ChangeHealthUI(updatedHealth);
+        Debug.Log(updatedHealth);
+        Debug.Log(health);
+    }
+
 
     [PunRPC]
     public override void RestoreHealth(float newHealth)
     {
+        Debug.Log(health);
         base.RestoreHealth(newHealth);
-        ChangeHealthUI(health);
-  
+        Debug.Log(health);
+        Debug.Log("회복1");
     }
 
     [PunRPC]
@@ -63,7 +79,6 @@ public class RunnerPlayer : PlayerEntity
         }
         base.OnDamage(damage, hitPoint, hitDirection);
         ChangeHealthUI(health);
-
     }
 
     [PunRPC]
@@ -101,6 +116,11 @@ public class RunnerPlayer : PlayerEntity
             healthImage02.sprite = nullHealthSprite;
         }
 
+        if (photonView.IsMine)
+        {
+            UIManager.instance.HeartImage(changeHealthValue);
+        }
+
     }
 
     [PunRPC]
@@ -124,9 +144,12 @@ public class RunnerPlayer : PlayerEntity
         if (photonView.IsMine)
         {
             PhotonNetwork.Destroy(gameObject);
-            PhotonNetwork.Instantiate("TagPlayer", this.transform.position, this.transform.rotation);
+            Vector3 spawnPosition = new Vector3(transform.position.x, transform.position.y + 1, transform.position.z);
+            PhotonNetwork.Instantiate("TagPlayer", spawnPosition, this.transform.rotation);
+            UIManager.instance.UpdateTeamIdText(2);
         }
     }
 
-    
+
+
 }

@@ -19,19 +19,30 @@ public class PlayerAttack : MonoBehaviourPun
 
     private void OnEnable()
     {
-        UIManager.instance.AttackOnClick(() =>
+        if (photonView.IsMine)
         {
-            StartCoroutine(Attack());
+            Debug.Log("공격버튼 할당");
+            UIManager.instance.AttackOnClick(() =>
+            {
+                StartCoroutine(Attack());
+            }
+                );
+            UIManager.instance.attackButton.interactable = true;
         }
-            );
         pan.gameObject.SetActive(true);
-        UIManager.instance.attackButton.interactable = true;
     }
 
     private void OnDisable()
     {
+        if (photonView.IsMine)
+        {
+            Debug.Log("공격버튼 할당 제거");
+            UIManager.instance.attackButton.onClick.RemoveAllListeners();
+        }
         pan.gameObject.SetActive(false);
     }
+
+   
 
     private void OnAnimatorIK(int layerIndex)
     {
@@ -60,12 +71,8 @@ public class PlayerAttack : MonoBehaviourPun
         {
             UIManager.instance.attackButton.interactable = false;
             playerAnimator.SetTrigger("Attack");
+            yield return new WaitForSeconds(0.5f);
             pan.Attack();
-            if (GameManager.instance.successAttack == false)
-            {
-                missParticle.Play();
-            }
-            GameManager.instance.successAttack = false;
             yield return new WaitForSeconds(3f);
             UIManager.instance.attackButton.interactable = true;
         }

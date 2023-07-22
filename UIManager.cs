@@ -31,12 +31,20 @@ public class UIManager : MonoBehaviourPun
     public Button[] skillButtons;
     public Text teamIdText;
     public Image startImage;
-    public Image loadingImage;
+    public Text numberText;
+
+    public Image itemSpawnImage01;
+    public Image itemSpawnImage02;
+    public Animator itemSpawnAnimator01;
+    public Animator itemSpawnAnimator02;
 
     public Image[] skillButtonImages;
  
     public Sprite[] skillsSpriteRunner;
     public Sprite[] skillsSpriteTagger;
+
+    public Image heart01;
+    public Image heart02;
 
     public Sprite startText9;
     public Sprite startText8;
@@ -50,12 +58,15 @@ public class UIManager : MonoBehaviourPun
 
     public Text timeText;
 
+    public Image loadingImage;
+
     public Image runnerWinImage;
     public Image taggerWinImage;
 
+    public Image[] iceImages;
+
     private void Awake()
     {
-        loadingImage.gameObject.SetActive(true);
         StartImageSet();
     }
 
@@ -81,7 +92,7 @@ public class UIManager : MonoBehaviourPun
 
     private IEnumerator GameStartTextCoroutine()
     {
-        LoadingImageOff();
+        loadingImage.gameObject.SetActive(false);
         yield return new WaitForSeconds(1f);
         startImage.sprite = startText9;
         yield return new WaitForSeconds(1f);
@@ -138,22 +149,11 @@ public class UIManager : MonoBehaviourPun
         attackButton.onClick.AddListener(() => onClickAction());
     }
 
-    public void LoadingImageOff()
-    {
-        loadingImage.gameObject.SetActive(false);
-    }
+    
 
     public void RandomSkillRunner()
     {
         if (skillButtonImages[0].sprite != null && skillButtonImages[1].sprite != null && skillButtonImages[2].sprite != null) return;
-        for (int i=2; i>0; i--)
-        {
-            if (skillButtonImages[i - 1].sprite == null)
-            {
-                skillButtonImages[i - 1].sprite = skillButtonImages[i].sprite;
-                skillButtonImages[i].sprite = null;
-            }
-        }
 
         Sprite skillSprite = skillsSpriteRunner[UnityEngine.Random.Range(0, skillsSpriteRunner.Length)];
         for (int i=0; i < 3; i++)
@@ -170,15 +170,6 @@ public class UIManager : MonoBehaviourPun
     public void RandomSkillTagger()
     {
         if (skillButtonImages[0].sprite != null && skillButtonImages[1].sprite != null && skillButtonImages[2].sprite != null) return;
-        for (int i = 2; i > 0; i--)
-        {
-            if (skillButtonImages[i - 1].sprite == null)
-            {
-                skillButtonImages[i - 1].sprite = skillButtonImages[i].sprite;
-                skillButtonImages[i].sprite = null;
-            }
-        }
-
         Sprite skillSprite = skillsSpriteTagger[UnityEngine.Random.Range(0, skillsSpriteTagger.Length)];
         for (int i = 0; i < 3; i++)
         {
@@ -197,5 +188,67 @@ public class UIManager : MonoBehaviourPun
         else return false;
     }
 
+    public void UpdateNumberText(int number)
+    {
+        numberText.text = string.Format("{0}Έν", number);
+    }
+
+    [PunRPC]
+    public void ItemSpawnText()
+    {
+        StartCoroutine(ItemSpawnCoroutine());     
+    }
+
+    public IEnumerator ItemSpawnCoroutine()
+    {
+        itemSpawnImage01.gameObject.SetActive(true);
+        itemSpawnAnimator01.SetTrigger("Down");
+        yield return new WaitForSeconds(2f);
+        itemSpawnAnimator01.SetTrigger("Up");
+        yield return new WaitForSeconds(1f);
+        itemSpawnImage01.gameObject.SetActive(false);
+        yield return new WaitForSeconds(7f);
+        itemSpawnImage02.gameObject.SetActive(true);
+        itemSpawnAnimator02.SetTrigger("Down");
+        yield return new WaitForSeconds(2f);
+        itemSpawnAnimator02.SetTrigger("Up");
+        yield return new WaitForSeconds(1f);
+        itemSpawnImage02.gameObject.SetActive(false);
+    }
+
+    public void HeartImage(float index)
+    {
+        if (index == 2)
+        {
+            heart01.gameObject.SetActive(true);
+            heart02.gameObject.SetActive(true);
+        } else if (index == 1)
+        {
+            heart01.gameObject.SetActive(true);
+            heart02.gameObject.SetActive(false);
+        } else
+        {
+            heart01.gameObject.SetActive(false);
+            heart02.gameObject.SetActive(false);
+        }
+    }
+
+    public void StartIceImage()
+    {
+        StartCoroutine(IceImage());
+    }
+
+    public IEnumerator IceImage()
+    {
+        for(int i = 0; i < iceImages.Length; i++)
+        {
+            iceImages[i].gameObject.SetActive(true);
+        }
+        yield return new WaitForSeconds(4f);
+        for (int i = 0; i < iceImages.Length; i++)
+        {
+            iceImages[i].gameObject.SetActive(false);
+        }
+    }
 
 }

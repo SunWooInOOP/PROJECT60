@@ -5,7 +5,7 @@ public class CameraManager : MonoBehaviourPun
 {
     public GameObject playerCamera;
 
-    private void Start()
+    private void Awake()
     {
         if (photonView.IsMine)
         {

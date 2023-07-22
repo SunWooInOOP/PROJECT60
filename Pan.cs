@@ -24,6 +24,7 @@ public class Pan : MonoBehaviourPun
     }
     public void Attack()
     {
+        photonView.RPC("PlayAttackSound", RpcTarget.All);
         photonView.RPC("OnAttackClients", RpcTarget.MasterClient);
     }
 
@@ -40,12 +41,19 @@ public class Pan : MonoBehaviourPun
 
         yield return new WaitForSeconds(0.5f);
         attackEffectCollider.enabled = false;
+
     }
 
     [PunRPC]
     private void AttackEffect()
     {
         attackEffect.Play();
+    }
+
+    [PunRPC]
+    public void PlayAttackSound()
+    {
+        panAudioSource.Play();
     }
 
 }

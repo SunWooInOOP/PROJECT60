@@ -6,6 +6,7 @@ public class AttackEffect : MonoBehaviourPun
     public float attackDamage = 1;
     public float attackDelay = 1.5f;
     private float lastAttackTime;
+    public ParticleSystem missParticle;
 
     public void OnTriggerEnter(Collider other)
     {
@@ -21,22 +22,19 @@ public class AttackEffect : MonoBehaviourPun
                     player.OnDamage(attackDamage, hitPosition, Vector3.zero);
                     Debug.Log("공격처리");
                     lastAttackTime = Time.time;
+                    return;
                 }
             }
-        }
-        PlayerEntity atplayer = other.GetComponent<PlayerEntity>();
-        if (atplayer != null)
-        {
-            if (this.GetComponentInParent<PlayerEntity>().teamId != atplayer.GetComponent<PlayerEntity>().teamId)
-            {
-                GameManager.instance.SuccessAttack();
-                lastAttackTime = Time.time;
-            }
-        }
+            photonView.RPC("MissParticlePlay", RpcTarget.All);
+            lastAttackTime = Time.time;
 
+        }
     }
 
-   
-
+    [PunRPC]
+    public void MissParticlePlay()
+    {
+        missParticle.Play();
+    }
 
 }

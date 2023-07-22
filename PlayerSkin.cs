@@ -9,22 +9,28 @@ public class PlayerSkin : MonoBehaviourPun
 
     private void OnEnable()
     {
-        playerSkin = GetComponent<SkinnedMeshRenderer>();
-        if (PhotonNetwork.IsMasterClient)
+        if (photonView.IsMine)
         {
-            ChangeMaterial(playerSkinData.playerSkinMaterial.name);
+            if (playerSkinData.playerSkinMaterial != null)
+            {
+                Material skinMaterial = playerSkinData.playerSkinMaterial;
+                Material[] matArray = playerSkin.materials;
+                matArray[0] = playerSkinData.playerSkinMaterial;
+                playerSkin.materials = matArray;
+                photonView.RPC("ChangeMaterial", RpcTarget.Others, skinMaterial.name);
+            }
         }
     }
 
+    [PunRPC]
     public void ChangeMaterial(string materialName)
     {
-        photonView.RPC("SyncMaterial", RpcTarget.All, materialName);
+        Material newMaterial = materialManager.GetMaterialByName(materialName);
+        Material[] matArray = playerSkin.materials;
+        matArray[0] = newMaterial;
+        playerSkin.materials = matArray;
     }
 
-    [PunRPC]
-    public void SyncMaterial(string materialName)
-    {
-        Material newMaterial = materialManager.GetMaterialByName(materialName);
-        playerSkin.materials[0] = newMaterial;
-    }
+
+
 }

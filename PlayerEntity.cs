@@ -13,10 +13,11 @@ public class PlayerEntity : MonoBehaviourPun
     private Rigidbody playerRigidbody;
 
     [PunRPC]
-    public void ApplyUpdatedHealth(float newHealth, bool newDead)
+    public virtual void ApplyUpdatedHealth(float newHealth, bool newDead)
     {
         health = newHealth;
         dead = newDead;
+        Debug.Log("업데이트 슈퍼");
     }
 
     protected virtual void OnEnable()
@@ -53,8 +54,9 @@ public class PlayerEntity : MonoBehaviourPun
         if (PhotonNetwork.IsMasterClient)
         {
             health += newHealth;
-            photonView.RPC("ApplyUpdatedHealth", RpcTarget.Others, health, dead);
-            photonView.RPC("RestoreHealth", RpcTarget.Others, newHealth);
+            if (health > 2) health = 2;
+            photonView.RPC("ApplyUpdatedHealth", RpcTarget.All, health, dead);
+            Debug.Log("회복2");
         }
     }
 
@@ -89,7 +91,7 @@ public class PlayerEntity : MonoBehaviourPun
         if (photonView.IsMine)
         {
             playerRigidbody.AddForce(force, ForceMode.Impulse);
-            playerRigidbody.AddForce(Vector3.up * 10f, ForceMode.Impulse);
+            playerRigidbody.AddForce(Vector3.up * 90f, ForceMode.Impulse);
         }
     }
 

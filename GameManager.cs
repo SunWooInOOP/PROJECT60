@@ -24,10 +24,9 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     public GameObject runnerPrefab;
     public GameObject taggerPrefab;
 
-    public bool successAttack = false;
-
     private float gameTime;
     private bool isStart = false;
+    private bool isSpawnText = false;
 
     public Vector3 spawnPoint;
 
@@ -47,20 +46,18 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         GameStart();
         if (PhotonNetwork.IsMasterClient)
         {
-            UIManager.instance.photonView.RPC("LoadingImageOff", RpcTarget.All);
             UIManager.instance.photonView.RPC("GameStartText", RpcTarget.All);
             isGameover = false;
         }
         Invoke("TimeSet", 10f);
-        successAttack = false;
     }
 
     private void TimeSet()
     {
         if (PhotonNetwork.IsMasterClient)
         {
-            gameTime = 300f;
             isStart = true;
+            gameTime = 240f;
         }
     }
 
@@ -99,6 +96,12 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         }
     }
 
+    public void NumberTextUpdate()
+    {
+        RunnerPlayer[] runners = FindObjectsOfType<RunnerPlayer>();
+        UIManager.instance.UpdateNumberText(runners.Length);
+    }
+
     [PunRPC]
     public void TaggerWin()
     {
@@ -115,9 +118,10 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 
     private void Update()
     {
+        NumberTextUpdate();
         TimeUpdate();
         IsTaggerWin();
-    
+        ItemSpawnTextImageUpdate();   
     }
 
     private void GameStart()
@@ -184,9 +188,24 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         SceneManager.LoadScene("Lobby");
     }
 
-    public void SuccessAttack()
+    public void ItemSpawnTextImageUpdate()
     {
-        successAttack = true;
+        if (!PhotonNetwork.IsMasterClient) return;
+        if (gameTime < 230 && isSpawnText == false && isStart == true)
+        {
+            Debug.Log("게임매니저 실행");
+            UIManager.instance.photonView.RPC("ItemSpawnText", RpcTarget.All);
+            isSpawnText = true;
+        }
     }
 
+    public bool GetIsStart()
+    {
+        return isStart;
+    }
+    
+    public float GetGameTime()
+    {
+        return gameTime;
+    }
 }

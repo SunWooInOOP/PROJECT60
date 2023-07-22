@@ -37,6 +37,10 @@ public class TaggerPlayer : PlayerEntity
         taggerImage.gameObject.SetActive(true);
 
         runnerPlayerMovement.enabled = true;
+        if (photonView.IsMine)
+        {
+            UIManager.instance.HeartImage(0);
+        }
     }
 
     [PunRPC]
@@ -82,7 +86,7 @@ public class TaggerPlayer : PlayerEntity
         }
         runnerPlayerMovement.photonView.RPC("ChangeSpeed", RpcTarget.All, 1f);
         yield return new WaitForSeconds(2f);
-        runnerPlayerMovement.photonView.RPC("ChangeSpeed", RpcTarget.All, 8.5f);
+        runnerPlayerMovement.photonView.RPC("ChangeSpeed", RpcTarget.All, 7.5f);
         if (photonView.IsMine)
         {
             playerAnimator.SetTrigger("NonHitted");
@@ -94,6 +98,6 @@ public class TaggerPlayer : PlayerEntity
     {
         runnerPlayerMovement.photonView.RPC("ChangeSpeed", RpcTarget.All, 0f);
         yield return new WaitForSeconds(10f);
-        runnerPlayerMovement.photonView.RPC("ChangeSpeed", RpcTarget.All, 8.5f);
+        runnerPlayerMovement.photonView.RPC("ChangeSpeed", RpcTarget.All, 7.5f);
     }
 }
